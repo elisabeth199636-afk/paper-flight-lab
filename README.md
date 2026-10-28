@@ -27,6 +27,7 @@ python3 -m http.server 8000 --directory dist
 ```sh
 node tests/cut-regression.cjs
 node tests/editor-regression.cjs
+node tests/share-link-feasibility.cjs
 node --check dist/app.js
 node --check dist/cut-editor.js
 node --check dist/viewer3d.js
@@ -36,6 +37,8 @@ node --check dist/physics.js
 回归测试覆盖连续 12 次剪裁、撤销/重做、存储恢复、单侧剪裁和连接保护。测试使用模拟 DOM，不等于浏览器端交互测试。
 
 编辑器回归另覆盖键盘调整的撤销/重做、无改动时保留重做、一次拖动作为一次编辑，以及试飞返回和键盘旋转时的视角标识。
+
+朋友通过链接分享飞机并对比的技术验证、结果及待接入事项见 [验证说明](docs/share-link-feasibility.md)。这是实验性验证，尚未接入游戏页面。
 
 ## 文件结构
 

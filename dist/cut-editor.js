@@ -16,7 +16,7 @@ function renderCut(){
  cutValid=false;$('#cutStatus').textContent=assessCut();$('#confirmCut').disabled=!cutValid;$('#cutUndo').disabled=!undo.length;$('#cutRedo').disabled=!redo.length;
  const L=2.45-params.nose*.0045,B=.68+params.wing*.006,tail=-L*.53;
  const elements=['<text x="320" y="25" text-anchor="middle" fill="var(--canvas-ink)" font-size="12">↑ 机头方向 / 翼尾放大</text>'];
- const polygon=(poly,side,color)=>'<polygon points="'+poly.map(v=>cutScreen(side*v[2]/B,(v[0]-tail)/.36,side).join(',')).join(' ')+'" fill="'+color+'" stroke="var(--violet)" stroke-width="1.5"/>';
+ const polygon=(poly,side,color)=>'<polygon points="'+poly.map(v=>cutScreen(side*v[2]/B,(v[0]-tail)/.36,side).join(',')).join(' ')+'" fill="'+color+'"/>';
  for(const side of [-1,1]){
   elements.push(polygon(tailPolygon(params,side),side,pendingCut&&cutValid?'var(--cut-remove)':'var(--cut-keep)'));
   if(pendingCut&&cutValid)elements.push(polygon(tailPolygon(cutCandidate(),side),side,'var(--cut-keep)'));

@@ -14,14 +14,13 @@ for(const k of Object.keys(defaults)){
  input.addEventListener('change',()=>{editing=false;persist()});
 }
 $('#undo').onclick=()=>{if(!undo.length)return;redo.push({...params});params=undo.pop();sync();persist()};$('#redo').onclick=()=>{if(!redo.length)return;undo.push({...params});params=redo.pop();sync();persist()};$('#reset').onclick=()=>{if(confirm('恢复默认飞机？已有试飞记录会保留。')){remember();params={...defaults};sync();persist()}};
-function poly(pts,fill,stroke='#9679b2'){ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke()}
+function poly(pts,fill){ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();ctx.fillStyle=fill;ctx.fill()}
 function plane(cx,cy,size,p,angle=0,editor=false){ctx.save();ctx.translate(cx,cy);ctx.rotate(angle);let L=size*(1.08-p.nose*.002),B=size*(.37+p.wing*.003);const nose=[L*.62,0],tail=[-L*.48,0],tip1=[-L*.22,-B],tip2=[-L*.22,B],fold1=[-L*.35,-B*.18],fold2=[-L*.35,B*.18];
  if(editor&&oblique)ctx.transform(1,-.3,.33,.62,0,0);
- ctx.save();ctx.translate(8,20);ctx.globalAlpha=.09;ctx.filter='blur(12px)';poly([nose,tip1,tail,tip2],'#6736a8','transparent');ctx.restore();
- poly([nose,tip1,fold1],'#fffae9');poly([nose,fold1,tail],'#decaed');poly([nose,tail,fold2],'#bfa2d9');poly([nose,fold2,tip2],'#fffcef');
- const bend=p.trim*1.5;poly([[tip2[0],tip2[1]],[fold2[0],fold2[1]],[-L*.36,fold2[1]-bend],[-L*.28,tip2[1]-bend]],'#f7e2bd');
- ctx.setLineDash([4,4]);ctx.strokeStyle='#9679b2';ctx.beginPath();ctx.moveTo(...tail);ctx.lineTo(...nose);ctx.stroke();ctx.setLineDash([]);
- if(editor){handles=[];for(const [name,pt]of [['nose',nose],['wing',tip2]]){let matrix=ctx.getTransform();handles.push({name,x:matrix.a*pt[0]+matrix.c*pt[1]+matrix.e,y:matrix.b*pt[0]+matrix.d*pt[1]+matrix.f});ctx.beginPath();ctx.arc(...pt,8,0,Math.PI*2);ctx.fillStyle='#fffae9';ctx.fill();ctx.strokeStyle='#6736a8';ctx.lineWidth=2;ctx.stroke();ctx.beginPath();ctx.arc(...pt,2.5,0,Math.PI*2);ctx.fillStyle='#6736a8';ctx.fill()}}
+ ctx.save();ctx.translate(8,20);ctx.globalAlpha=.09;ctx.filter='blur(12px)';poly([nose,tip1,tail,tip2],'#6736a8');ctx.restore();
+ poly([nose,tip1,fold1],'#84f4d7');poly([nose,fold1,tail],'#24bf9a');poly([nose,tail,fold2],'#0c9c79');poly([nose,fold2,tip2],'#b0f7e4');
+ const bend=p.trim*1.5;poly([[tip2[0],tip2[1]],[fold2[0],fold2[1]],[-L*.36,fold2[1]-bend],[-L*.28,tip2[1]-bend]],'#2dcea7');
+ if(editor){handles=[];for(const [name,pt]of [['nose',nose],['wing',tip2]]){let matrix=ctx.getTransform();handles.push({name,x:matrix.a*pt[0]+matrix.c*pt[1]+matrix.e,y:matrix.b*pt[0]+matrix.d*pt[1]+matrix.f});ctx.beginPath();ctx.arc(...pt,8,0,Math.PI*2);ctx.fillStyle='#84f4d7';ctx.fill();ctx.strokeStyle='#6736a8';ctx.lineWidth=2;ctx.stroke();ctx.beginPath();ctx.arc(...pt,2.5,0,Math.PI*2);ctx.fillStyle='#6736a8';ctx.fill()}}
  ctx.restore()}
 function resize(){const r=canvas.getBoundingClientRect();w=r.width;h=r.height;canvas.width=w*devicePixelRatio;canvas.height=h*devicePixelRatio;ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);draw()}
 new ResizeObserver(resize).observe(canvas);

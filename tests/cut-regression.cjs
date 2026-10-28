@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const html=fs.readFileSync('dist/index.html','utf8'),ids=new Set([...html.matchAll(/id="([^"]+)"/g)].map(m=>m[1]));
+let storage=null;function boot(){const el={};let closed=0;const get=id=>{assert(ids.has(id),'missing '+id);return el[id]??={value:0,classList:{add(){},remove(){},toggle(){}},getContext(){return {}},addEventListener(){},setAttribute(){},replaceChildren(){},appendChild(){},style:{},showModal(){},close(){closed++}}};
+const box={document:{querySelector:s=>get(s.slice(1))},localStorage:{getItem:()=>storage,setItem:(k,v)=>storage=v},ResizeObserver:class{observe(){}},setTimeout(){},confirm:()=>true};vm.createContext(box);for(const f of ['viewer3d.js','physics.js','app.js','cut-editor.js'])vm.runInContext(fs.readFileSync('dist/'+f,'utf8').replace('function draw(){','function draw(){return;'),box);return {get,run:s=>vm.runInContext(s,box),closed:()=>closed}}
+const b=boot();for(let i=0;i<12;i++){b.run(`pendingCut={side:0,line:[-1,1,${.45-i*.01}]};renderCut()`);assert.equal(b.run('cutValid'),true);b.get('confirmCut').onclick();assert.equal(b.run('params.cuts.length'),i+1);assert.equal(b.run('pendingCut'),null)}assert.equal(b.closed(),0);
+const shape=b.run('JSON.stringify(buildPlaneMesh(params))');b.get('cutUndo').onclick();assert.equal(b.run('params.cuts.length'),11);b.get('cutRedo').onclick();assert.equal(b.run('JSON.stringify(buildPlaneMesh(params))'),shape);
+const c=boot();assert.equal(c.run('params.cuts.length'),12);assert.equal(c.run('JSON.stringify(buildPlaneMesh(params))'),shape);
+c.get('clearCuts').onclick();c.run('pendingCut={side:-1,line:[-1,0,.89]};renderCut()');assert.equal(c.run('cutValid'),true);c.get('confirmCut').onclick();assert.equal(c.run('JSON.stringify(tailPolygon(params,1))===JSON.stringify(tailPolygon({...params,cuts:[]},1))'),true);
+c.run('pendingCut={side:0,line:[0,-1,.1]};renderCut()');assert.equal(c.run('cutValid'),false);
+console.log('PASS: 12 consecutive cuts, modal remains open, undo/redo, persistence reload, side-edge cut, untouched opposite side, disconnected cut rejected.');

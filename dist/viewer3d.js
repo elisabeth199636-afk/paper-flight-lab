@@ -30,9 +30,9 @@ function buildPlaneMesh(p){
   const addBody=(v,color)=>faces.push({v:v.map(bodyRotate),color});
   const addWing=(v,color,edge=false)=>{if(v.length>=3)faces.push({v:v.map(wingRotate),color,...(edge?{edge:true}:{})})};
   const wing=[N,outer,fold],flap=tailPolygon(p,side);
-  addWing(wing,side===1?[132,244,215]:[82,225,191]);addWing(flap,[45,206,167]);addBody([N,fold,C],[36,191,154]);addBody([N,C,K],[12,156,121]);
+  addWing(wing,side===1?[191,149,233]:[159,112,211]);addWing(flap,[143,87,199]);addBody([N,fold,C],[123,70,180]);addBody([N,C,K],[105,59,168]);
   folds.push([bodyRotate(N),bodyRotate(fold)]);roots.push(bodyRotate(fold));
-  for(const poly of [wing,flap]){const bottom=poly.map(a=>[a[0],a[1]-.012,a[2]]);addWing(bottom,[82,225,191]);for(let i=0;i<poly.length;i++)addWing([poly[i],poly[(i+1)%poly.length],bottom[(i+1)%poly.length],bottom[i]],[9,148,113],true)}
+  for(const poly of [wing,flap]){const bottom=poly.map(a=>[a[0],a[1]-.012,a[2]]);addWing(bottom,[159,112,211]);for(let i=0;i<poly.length;i++)addWing([poly[i],poly[(i+1)%poly.length],bottom[(i+1)%poly.length],bottom[i]],[85,42,142],true)}
  }
  return {faces,folds,rootGap:Math.hypot(...roots[0].map((v,i)=>v-roots[1][i])),length:L*1.18};
 }
@@ -42,8 +42,8 @@ function drawPlane3D(ctx,w,h,p){
  function rotate(v){const x=v[0]*cy+v[2]*sy,z=-v[0]*sy+v[2]*cy;return [x,v[1]*cp-z*sp,v[1]*sp+z*cp]}
  const size=Math.min(w*.22,h*.40)*orbit.zoom;
  function project(a){const f=5/(5-a[2]);return [w*.5+a[0]*size*f,h*.49-a[1]*size*f]}
- ctx.save();ctx.fillStyle='#cbbdf4';ctx.fillRect(0,0,w,h);
- ctx.save();ctx.translate(w*.5,h*.77);ctx.scale(1,.22);ctx.fillStyle='#8b68bd3b';ctx.beginPath();ctx.arc(0,0,size*1.15,0,Math.PI*2);ctx.fill();ctx.restore();
+ ctx.save();ctx.fillStyle='#faf9ee';ctx.fillRect(0,0,w,h);
+ ctx.save();ctx.translate(w*.5,h*.77);ctx.scale(1,.22);ctx.fillStyle='#f6e4c7';ctx.beginPath();ctx.arc(0,0,size*1.15,0,Math.PI*2);ctx.fill();ctx.restore();
  // Keep the geometry, but omit thin rim faces that read like a drawn outline.
  const prepared=faces.filter(f=>!f.edge).map(f=>({...f,pts:f.v.map(rotate)})).sort((a,b)=>a.pts.reduce((s,v)=>s+v[2],0)/a.pts.length-b.pts.reduce((s,v)=>s+v[2],0)/b.pts.length);
  for(const f of prepared){const [a,b,c]=f.pts,u=b.map((n,i)=>n-a[i]),v=c.map((n,i)=>n-a[i]);let normal=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]];const len=Math.hypot(...normal)||1;normal=normal.map(x=>x/len);if(normal[2]<0)normal=normal.map(x=>-x);const light=.73+.27*Math.max(0,normal[0]*-.35+normal[1]*.75+normal[2]*.56);ctx.fillStyle='rgb('+f.color.map(x=>Math.round(x*light)).join(',')+')';ctx.beginPath();f.pts.forEach((a,i)=>{const xy=project(a);i?ctx.lineTo(...xy):ctx.moveTo(...xy)});ctx.closePath();ctx.fill()}

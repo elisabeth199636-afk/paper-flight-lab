@@ -17,16 +17,16 @@ $('#undo').onclick=()=>{if(!undo.length)return;redo.push({...params});params=und
 function poly(pts,fill){ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();ctx.fillStyle=fill;ctx.fill()}
 function plane(cx,cy,size,p,angle=0,editor=false){ctx.save();ctx.translate(cx,cy);ctx.rotate(angle);let L=size*(1.08-p.nose*.002),B=size*(.37+p.wing*.003);const nose=[L*.62,0],tail=[-L*.48,0],tip1=[-L*.22,-B],tip2=[-L*.22,B],fold1=[-L*.35,-B*.18],fold2=[-L*.35,B*.18];
  if(editor&&oblique)ctx.transform(1,-.3,.33,.62,0,0);
- ctx.save();ctx.translate(8,20);ctx.globalAlpha=.09;ctx.filter='blur(12px)';poly([nose,tip1,tail,tip2],'#6736a8');ctx.restore();
- poly([nose,tip1,fold1],'#84f4d7');poly([nose,fold1,tail],'#24bf9a');poly([nose,tail,fold2],'#0c9c79');poly([nose,fold2,tip2],'#b0f7e4');
- const bend=p.trim*1.5;poly([[tip2[0],tip2[1]],[fold2[0],fold2[1]],[-L*.36,fold2[1]-bend],[-L*.28,tip2[1]-bend]],'#2dcea7');
- if(editor){handles=[];for(const [name,pt]of [['nose',nose],['wing',tip2]]){let matrix=ctx.getTransform();handles.push({name,x:matrix.a*pt[0]+matrix.c*pt[1]+matrix.e,y:matrix.b*pt[0]+matrix.d*pt[1]+matrix.f});ctx.beginPath();ctx.arc(...pt,8,0,Math.PI*2);ctx.fillStyle='#84f4d7';ctx.fill();ctx.strokeStyle='#6736a8';ctx.lineWidth=2;ctx.stroke();ctx.beginPath();ctx.arc(...pt,2.5,0,Math.PI*2);ctx.fillStyle='#6736a8';ctx.fill()}}
+ ctx.save();ctx.translate(8,20);ctx.globalAlpha=.09;ctx.filter='blur(12px)';poly([nose,tip1,tail,tip2],'#f6e4c7');ctx.restore();
+ poly([nose,tip1,fold1],'#bf95e9');poly([nose,fold1,tail],'#8f57c7');poly([nose,tail,fold2],'#693ba8');poly([nose,fold2,tip2],'#dabcf4');
+ const bend=p.trim*1.5;poly([[tip2[0],tip2[1]],[fold2[0],fold2[1]],[-L*.36,fold2[1]-bend],[-L*.28,tip2[1]-bend]],'#9f70d3');
+ if(editor){handles=[];for(const [name,pt]of [['nose',nose],['wing',tip2]]){let matrix=ctx.getTransform();handles.push({name,x:matrix.a*pt[0]+matrix.c*pt[1]+matrix.e,y:matrix.b*pt[0]+matrix.d*pt[1]+matrix.f});ctx.beginPath();ctx.arc(...pt,8,0,Math.PI*2);ctx.fillStyle='#bf95e9';ctx.fill();ctx.strokeStyle='#6736a8';ctx.lineWidth=2;ctx.stroke();ctx.beginPath();ctx.arc(...pt,2.5,0,Math.PI*2);ctx.fillStyle='#6736a8';ctx.fill()}}
  ctx.restore()}
 function resize(){const r=canvas.getBoundingClientRect();w=r.width;h=r.height;canvas.width=w*devicePixelRatio;canvas.height=h*devicePixelRatio;ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);draw()}
 new ResizeObserver(resize).observe(canvas);
 function draw(){ctx.clearRect(0,0,w,h);if(mode==='edit'){drawPlane3D(ctx,w,h,params);return}if(!current)return;
  const maxX=Math.max(current.distance,previous?.distance||0,12)*1.12,scale=Math.min((w-70)/maxX,(h-140)/(Math.max(current.height,previous?.height||0,3)+1)),ground=h-58,origin=35;const point=a=>[origin+a.x*scale,ground-a.y*scale];
- ctx.fillStyle='#f5ead4';ctx.fillRect(0,ground,w,h-ground);ctx.strokeStyle='#a18bb7';ctx.beginPath();ctx.moveTo(0,ground);ctx.lineTo(w,ground);ctx.stroke();ctx.font='9px monospace';ctx.fillStyle='#6d5a79';for(let m=0;m<maxX;m+=maxX>45?10:5){let x=origin+m*scale;ctx.fillText(m+' m',x,ground+20);ctx.beginPath();ctx.moveTo(x,ground);ctx.lineTo(x,ground+5);ctx.stroke()}
+ ctx.fillStyle='#f6e4c7';ctx.fillRect(0,ground,w,h-ground);ctx.strokeStyle='#a18bb7';ctx.beginPath();ctx.moveTo(0,ground);ctx.lineTo(w,ground);ctx.stroke();ctx.font='9px monospace';ctx.fillStyle='#6d5a79';for(let m=0;m<maxX;m+=maxX>45?10:5){let x=origin+m*scale;ctx.fillText(m+' m',x,ground+20);ctx.beginPath();ctx.moveTo(x,ground);ctx.lineTo(x,ground+5);ctx.stroke()}
  function trail(points,color,dashed){ctx.strokeStyle=color;ctx.lineWidth=2;ctx.setLineDash(dashed?[4,5]:[]);ctx.beginPath();points.forEach((a,i)=>{const p=point(a);i?ctx.lineTo(...p):ctx.moveTo(...p)});ctx.stroke();ctx.setLineDash([])}
  if(previous&&comparison)trail(previous.points,'#8e70b2',true);const count=Math.max(1,Math.floor(progress*(current.points.length-1))+1),pts=current.points.slice(0,count);trail(pts,'#006b57',false);let a=pts.at(-1),[x,y]=point(a);plane(x,y,27,params,-a.theta);$('#live strong').innerHTML=Math.max(0,a.x).toFixed(1)+' <small>m</small>';
  if(mode==='result'){ctx.beginPath();ctx.arc(x,ground,5,0,Math.PI*2);ctx.fillStyle='#ff773e';ctx.fill()}

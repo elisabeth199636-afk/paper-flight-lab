@@ -30,9 +30,9 @@ function buildPlaneMesh(p){
   const addBody=(v,color)=>faces.push({v:v.map(bodyRotate),color});
   const addWing=(v,color)=>{if(v.length>=3)faces.push({v:v.map(wingRotate),color})};
   const wing=[N,outer,fold],flap=tailPolygon(p,side);
-  addWing(wing,side===1?[255,252,230]:[246,248,233]);addWing(flap,[232,236,210]);addBody([N,fold,C],[217,226,192]);addBody([N,C,K],[190,205,162]);
+  addWing(wing,side===1?[255,252,237]:[250,244,221]);addWing(flap,[247,226,189]);addBody([N,fold,C],[220,204,239]);addBody([N,C,K],[189,160,220]);
   folds.push([bodyRotate(N),bodyRotate(fold)]);roots.push(bodyRotate(fold));
-  for(const poly of [wing,flap]){const bottom=poly.map(a=>[a[0],a[1]-.012,a[2]]);addWing(bottom,[222,229,202]);for(let i=0;i<poly.length;i++)addWing([poly[i],poly[(i+1)%poly.length],bottom[(i+1)%poly.length],bottom[i]],[200,210,179])}
+  for(const poly of [wing,flap]){const bottom=poly.map(a=>[a[0],a[1]-.012,a[2]]);addWing(bottom,[237,223,249]);for(let i=0;i<poly.length;i++)addWing([poly[i],poly[(i+1)%poly.length],bottom[(i+1)%poly.length],bottom[i]],[182,151,212])}
  }
  return {faces,folds,rootGap:Math.hypot(...roots[0].map((v,i)=>v-roots[1][i])),length:L*1.18};
 }
@@ -42,13 +42,13 @@ function drawPlane3D(ctx,w,h,p){
  function rotate(v){const x=v[0]*cy+v[2]*sy,z=-v[0]*sy+v[2]*cy;return [x,v[1]*cp-z*sp,v[1]*sp+z*cp]}
  const size=Math.min(w*.22,h*.40)*orbit.zoom;
  function project(a){const f=5/(5-a[2]);return [w*.5+a[0]*size*f,h*.49-a[1]*size*f]}
- ctx.save();const gradient=ctx.createLinearGradient(0,0,w,h);gradient.addColorStop(0,'#e8e4f5');gradient.addColorStop(1,'#d4e6eb');ctx.fillStyle=gradient;ctx.fillRect(0,0,w,h);
+ ctx.save();const gradient=ctx.createLinearGradient(0,0,w,h);gradient.addColorStop(0,'#c8b9f1');gradient.addColorStop(1,'#ded0fa');ctx.fillStyle=gradient;ctx.fillRect(0,0,w,h);
  const glow=ctx.createRadialGradient(w*.5,h*.46,10,w*.5,h*.46,w*.48);glow.addColorStop(0,'#ffffff66');glow.addColorStop(1,'#ffffff00');ctx.fillStyle=glow;ctx.fillRect(0,0,w,h);
- ctx.save();ctx.translate(w*.5,h*.77);ctx.scale(1,.22);const shadow=ctx.createRadialGradient(0,0,5,0,0,size*1.15);shadow.addColorStop(0,'#3b3c5b25');shadow.addColorStop(1,'#3b3c5b00');ctx.fillStyle=shadow;ctx.beginPath();ctx.arc(0,0,size*1.15,0,Math.PI*2);ctx.fill();ctx.restore();
+ ctx.save();ctx.translate(w*.5,h*.77);ctx.scale(1,.22);const shadow=ctx.createRadialGradient(0,0,5,0,0,size*1.15);shadow.addColorStop(0,'#6736a82c');shadow.addColorStop(1,'#6736a800');ctx.fillStyle=shadow;ctx.beginPath();ctx.arc(0,0,size*1.15,0,Math.PI*2);ctx.fill();ctx.restore();
  const prepared=faces.map(f=>({...f,pts:f.v.map(rotate)})).sort((a,b)=>a.pts.reduce((s,v)=>s+v[2],0)/a.pts.length-b.pts.reduce((s,v)=>s+v[2],0)/b.pts.length);
- for(const f of prepared){const [a,b,c]=f.pts,u=b.map((n,i)=>n-a[i]),v=c.map((n,i)=>n-a[i]);let normal=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]];const len=Math.hypot(...normal)||1;normal=normal.map(x=>x/len);if(normal[2]<0)normal=normal.map(x=>-x);const light=.73+.27*Math.max(0,normal[0]*-.35+normal[1]*.75+normal[2]*.56);ctx.fillStyle='rgb('+f.color.map(x=>Math.round(x*light)).join(',')+')';ctx.strokeStyle='rgba(83,103,72,.22)';ctx.lineWidth=.7;ctx.beginPath();f.pts.forEach((a,i)=>{const xy=project(a);i?ctx.lineTo(...xy):ctx.moveTo(...xy)});ctx.closePath();ctx.fill();ctx.stroke()}
+ for(const f of prepared){const [a,b,c]=f.pts,u=b.map((n,i)=>n-a[i]),v=c.map((n,i)=>n-a[i]);let normal=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]];const len=Math.hypot(...normal)||1;normal=normal.map(x=>x/len);if(normal[2]<0)normal=normal.map(x=>-x);const light=.73+.27*Math.max(0,normal[0]*-.35+normal[1]*.75+normal[2]*.56);ctx.fillStyle='rgb('+f.color.map(x=>Math.round(x*light)).join(',')+')';ctx.strokeStyle='rgba(80,44,121,.30)';ctx.lineWidth=.7;ctx.beginPath();f.pts.forEach((a,i)=>{const xy=project(a);i?ctx.lineTo(...xy):ctx.moveTo(...xy)});ctx.closePath();ctx.fill();ctx.stroke()}
  // Small orientation compass, derived from the same 3D camera transform.
- const ox=35,oy=h-65;for(const [v,label,color]of [[[.25,0,0],'X','#a38c91'],[[0,.25,0],'Y','#7b956d'],[[0,0,.25],'Z','#8095b2']]){const q=rotate(v);ctx.strokeStyle=color;ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+q[0]*65,oy-q[1]*65);ctx.stroke();ctx.font='9px monospace';ctx.fillText(label,ox+q[0]*80-3,oy-q[1]*80+3)}ctx.restore();
+ const ox=35,oy=h-65;for(const [v,label,color]of [[[.25,0,0],'X','#993d1b'],[[0,.25,0],'Y','#006b57'],[[0,0,.25],'Z','#61349c']]){const q=rotate(v);ctx.strokeStyle=color;ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+q[0]*65,oy-q[1]*65);ctx.stroke();ctx.font='9px monospace';ctx.fillText(label,ox+q[0]*80-3,oy-q[1]*80+3)}ctx.restore();
 }
 
 if(typeof module!=="undefined")module.exports={tailConnection,tailConnectionRange,rotateAtFold,buildPlaneMesh,validCuts,clipTail,tailPolygon};

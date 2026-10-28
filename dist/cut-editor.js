@@ -15,18 +15,18 @@ function assessCut(){
 function renderCut(){
  cutValid=false;$('#cutStatus').textContent=assessCut();$('#confirmCut').disabled=!cutValid;$('#cutUndo').disabled=!undo.length;$('#cutRedo').disabled=!redo.length;
  const L=2.45-params.nose*.0045,B=.68+params.wing*.006,tail=-L*.53;
- const elements=['<text x="320" y="25" text-anchor="middle" fill="#718169" font-size="12">↑ 机头方向 / 翼尾放大</text>'];
- const polygon=(poly,side,color)=>'<polygon points="'+poly.map(v=>cutScreen(side*v[2]/B,(v[0]-tail)/.36,side).join(',')).join(' ')+'" fill="'+color+'" stroke="#8a9c7d" stroke-width="1.5"/>';
+ const elements=['<text x="320" y="25" text-anchor="middle" fill="var(--canvas-ink)" font-size="12">↑ 机头方向 / 翼尾放大</text>'];
+ const polygon=(poly,side,color)=>'<polygon points="'+poly.map(v=>cutScreen(side*v[2]/B,(v[0]-tail)/.36,side).join(',')).join(' ')+'" fill="'+color+'" stroke="var(--violet)" stroke-width="1.5"/>';
  for(const side of [-1,1]){
-  elements.push(polygon(tailPolygon(params,side),side,pendingCut&&cutValid?'#edafa5':'#e2e8cf'));
-  if(pendingCut&&cutValid)elements.push(polygon(tailPolygon(cutCandidate(),side),side,'#e2e8cf'));
+  elements.push(polygon(tailPolygon(params,side),side,pendingCut&&cutValid?'var(--cut-remove)':'var(--cut-keep)'));
+  if(pendingCut&&cutValid)elements.push(polygon(tailPolygon(cutCandidate(),side),side,'var(--cut-keep)'));
   const segment=tailConnectionRange(params,side);const a=cutScreen(.89*segment[0],.75+.25*segment[0],side),b=cutScreen(.89*segment[1],.75+.25*segment[1],side);
-  elements.push('<path d="M '+a.join(' ')+' L '+b.join(' ')+'" stroke="#6e835d" stroke-width="3"/>');
-  elements.push('<text x="'+(320+side*145)+'" y="320" text-anchor="middle" fill="#718169" font-size="12">'+(side===-1?'左翼尾':'右翼尾')+'</text>');
+  elements.push('<path d="M '+a.join(' ')+' L '+b.join(' ')+'" stroke="var(--teal)" stroke-width="3"/>');
+  elements.push('<text x="'+(320+side*145)+'" y="320" text-anchor="middle" fill="var(--canvas-ink)" font-size="12">'+(side===-1?'左翼尾':'右翼尾')+'</text>');
   if(pendingCut&&(pendingCut.side===0||pendingCut.side===side)){
    const [a,b,c]=pendingCut.line,den=a*a+b*b,cx=-a*c/den,cy=-b*c/den,dx=-b/Math.sqrt(den)*2,dy=a/Math.sqrt(den)*2;
    const start=cutScreen(cx-dx,cy-dy,side),end=cutScreen(cx+dx,cy+dy,side);
-   elements.push('<line x1="'+start[0]+'" y1="'+start[1]+'" x2="'+end[0]+'" y2="'+end[1]+'" stroke="'+(cutValid?'#c65343':'#96948b')+'" stroke-width="2" stroke-dasharray="7 6"/>');
+   elements.push('<line x1="'+start[0]+'" y1="'+start[1]+'" x2="'+end[0]+'" y2="'+end[1]+'" stroke="'+(cutValid?'var(--cut-line)':'var(--muted)')+'" stroke-width="2" stroke-dasharray="7 6"/>');
   }
  }
  cutSvg.innerHTML=elements.join('');

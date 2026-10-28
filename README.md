@@ -26,6 +26,7 @@ python3 -m http.server 8000 --directory dist
 
 ```sh
 node tests/cut-regression.cjs
+node tests/editor-regression.cjs
 node --check dist/app.js
 node --check dist/cut-editor.js
 node --check dist/viewer3d.js
@@ -33,6 +34,8 @@ node --check dist/physics.js
 ```
 
 回归测试覆盖连续 12 次剪裁、撤销/重做、存储恢复、单侧剪裁和连接保护。测试使用模拟 DOM，不等于浏览器端交互测试。
+
+编辑器回归另覆盖键盘调整的撤销/重做、无改动时保留重做、一次拖动作为一次编辑，以及试飞返回和键盘旋转时的视角标识。
 
 ## 文件结构
 
@@ -43,6 +46,7 @@ node --check dist/physics.js
 - `dist/cut-editor.js`：翼尾剪裁工作台。
 - `dist/physics.js`：确定性的简化飞行模拟。
 - `tests/cut-regression.cjs`：剪裁回归测试。
+- `tests/editor-regression.cjs`：参数编辑与视角状态回归测试。
 
 ## 模型边界
 
@@ -56,7 +60,7 @@ node --check dist/physics.js
 
 https://paper-flight-lab-yusha.elisabeth199636.chatgpt.site
 
-网站访问权限由托管平台单独管理；GitHub 私有仓库不会自动让网站公开。本次导入保持已有网站权限。代码推送到本仓库也不会自动触发现有 Sites 网站更新，尚未配置两者的自动同步。
+当前 GitHub 仓库与网站均已公开，访问权限分别管理。`.openai/hosting.json` 保留现有 Sites 项目标识和静态目录；部署时应更新这个项目，沿用原网站链接。代码推送到本仓库不会自动触发现有 Sites 网站更新，尚未配置两者的自动同步。
 
 每位访客的记录只保存在自己的浏览器，不包含账号系统、多人联机或共享排行榜。
 
